@@ -175,18 +175,10 @@ WHERE DNO=’5’)
 EXCEPT(SELECT PNO
 FROM WORKS_ON 
 WHERE E.SSN=SSN));
-or
-SELECT lname, fname, dno 
-FROM emp 
-WHERE NOT EXISTS (SELECT * 
-                  FROM works_on b 
-                  WHERE (b.pno IN(SELECT p.pno 
-                                 FROM project p 
-                                 WHERE p.dno='5') 
-                         AND 
-                         NOT EXISTS (SELECT * 
-                                     FROM works_on c 
-                                     WHERE c.ssn=ssn 
-                                     AND c.pno=b.pno)));
 
-5. select d.dno,count(*) from dept d,emp e where d.dno = e.dno and e.salary>600000 and d.dno in(select e1.dno from emp e1 group by e1.dno having count(*)>5) group by d.dno;
+5. select d.dno, count(*)
+from dept d,employee e 
+where d.dno=e.dno
+and e.salary>60000
+and d.dno in (select e1.dno from employee e1 group by e1.dno having count(*)>5)
+group by d.dno;
