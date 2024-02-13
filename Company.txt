@@ -1,0 +1,156 @@
+COMPANY:-
+
+create table emp(ssn varchar(20) primary key,fname varchar(20),lname varchar(20),address varchar(20),sex char(1),salary int);
+create table dept(dno int primary key,dname varchar(20),mgrssn varchar(20),mgrstartdate date,foreign key(mgrssn) references emp(ssn));
+
+alter table emp add superssn varchar(20);
+alter table emp add foreign key(superssn) references emp(ssn);
+alter table emp add dno int; alter table emp add foreign key(dno) references dept(dno);
+create table dloc(dno int primary key,dloc varchar(20),foreign key(dno) references dept(dno));
+create table project(pno int primary key,pname varchar(20),ploc varchar(20),dno int,foreign key(dno) references dept(dno));
+create table works_on(ssn varchar(20),pno int,hours int,primary key(ssn,pno),foreign key(ssn) references emp(ssn),foreign key(pno) references project(pno));
+
+
+1. (select distinct p.pno from project p,dept d,emp e where e.dno = d.dno and d.mgrssn=e.ssn and e.lname='scott')union(select distinct p1.pno from project p1,works_on w,emp e1 where p1.pno=w.pno and e1.ssn=w.ssn and e1.lname = 'scott');
+2.select e.fname,e.lname,1.1*e.salary as incr_sal from emp e,project p,works_on w where e.ssn = w.ssn and w.pno = p.pno and p.pname ='iot';
+3.select sum(e.salary),max(e.salary),min(e.salary),avg(e.salary) from emp e,dept d where e.dno=d.dno and d.dname='accounts';
+4.select e.lname,e.fname,e.dno from emp e where not exists((select pno from project where dno=5) except(select pno from works_on where e.ssn=ssn));
+
+or 
+
+4. SELECT lname, fname, dno 
+FROM emp 
+WHERE NOT EXISTS (SELECT * 
+                  FROM works_on b 
+                  WHERE (b.pno IN(SELECT p.pno 
+                                 FROM project p 
+                                 WHERE p.dno='5') 
+                         AND 
+                         NOT EXISTS (SELECT * 
+                                     FROM works_on c 
+                                     WHERE c.ssn=ssn 
+                                     AND c.pno=b.pno)));
+
+5.select d.dno,count(*) from dept d,emp e where d.dno = e.dno and e.salary>600000 and d.dno in(select e1.dno from emp e1 group by e1.dno having count(*)>5) group by d.dno;
+
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSECE01','JOHN','SCOTT','BANGALORE','M', 450000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE01','JAMES','SMITH','BANGALORE','M', 500000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE02','HEARN','BAKER','BANGALORE','M', 700000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE03','EDWARD','SCOTT','MYSORE','M', 500000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE04','PAVAN','HEGDE','MANGALORE','M', 650000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE05','GIRISH','MALYA','MYSORE','M', 450000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSCSE06','NEHA','SN','BANGALORE','F', 800000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSACC01','AHANA','K','MANGALORE','F', 350000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSACC02','SANTHOSH','KUMAR','MANGALORE','M', 300000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSISE01','VEENA','M','MYSORE','M', 600000); 
+ 
+INSERT INTO emp (ssn, fname, lname, address, sex, salary) 
+VALUES ('RNSIT01','NAGESH','HR','BANGALORE','M', 500000);
+ 
+
+INSERT INTO dept VALUES ('1', 'ACCOUNTS', 'RNSACC02', '2001-01-01'); 
+INSERT INTO dept VALUES ('2', 'IT', 'RNSIT01', '2016-08-01'); 
+INSERT INTO dept VALUES ('3', 'ECE', 'RNSECE01', '2008-06-01'); 
+INSERT INTO dept VALUES ('4', 'ISE', 'RNSISE01', '2015-08-01'); 
+INSERT INTO dept VALUES ('5', 'CSE', 'RNSCSE05', '2002-06-01'); 
+
+UPDATE emp SET 
+SUPERSSN=NULL, DNO='3'
+WHERE SSN='RNSECE01';
+ 
+UPDATE emp SET 
+SUPERSSN='RNSCSE02', DNO='5'
+WHERE SSN='RNSCSE01';
+ 
+UPDATE emp SET 
+SUPERSSN='RNSCSE03', DNO='5'
+WHERE SSN='RNSCSE02';
+ 
+UPDATE emp SET 
+SUPERSSN='RNSCSE04', DNO='5'
+WHERE SSN='RNSCSE03';
+ 
+UPDATE emp SET 
+DNO='5', SUPERSSN='RNSCSE05'       
+WHERE SSN='RNSCSE04';
+ 
+UPDATE emp SET 
+DNO='5', SUPERSSN='RNSCSE06'
+WHERE SSN='RNSCSE05';
+ 
+UPDATE emp SET 
+DNO='5', SUPERSSN=NULL
+WHERE SSN='RNSCSE06';
+ 
+UPDATE emp SET 
+DNO='1', SUPERSSN='RNSACC02'
+WHERE SSN='RNSACC01';
+ 
+UPDATE emp SET 
+DNO='1', SUPERSSN=NULL
+WHERE SSN='RNSACC02';
+ 
+UPDATE emp SET 
+DNO='4', SUPERSSN=NULL
+WHERE SSN='RNSISE01';
+ 
+UPDATE emp SET 
+DNO='2', SUPERSSN=NULL       
+WHERE SSN='RNSIT01';
+ 
+
+INSERT INTO dloc VALUES ('1', 'BANGALORE');
+INSERT INTO dloc VALUES ('2', 'BANGALORE');
+INSERT INTO dloc VALUES ('3', 'BANGALORE');
+INSERT INTO dloc VALUES ('4', 'MANGALORE');
+INSERT INTO dloc VALUES ('5', 'MANGALORE');
+
+INSERT INTO project VALUES (100, 'IOT', 'BANGALORE', 5);
+INSERT INTO project VALUES (101, 'CLOUD', 'BANGALORE', 5);
+INSERT INTO project VALUES (102, 'BIGDATA', 'BANGALORE', 5);
+INSERT INTO project VALUES (103, 'SENSORS', 'BANGALORE', 3);
+INSERT INTO project VALUES (104, 'BANK MANAGEMENT', 'BANGALORE', 1);
+ 
+INSERT INTO project VALUES (105, 'SALARY MANAGEMENT', 'BANGALORE', 1);
+ 
+INSERT INTO project VALUES (106, 'OPENSTACK', 'BANGALORE', 4);
+INSERT INTO project VALUES (107, 'SMART CITY', 'BANGALORE', 2);
+ 
+
+ 
+
+I
+
+INSERT INTO works_on VALUES ('RNSCSE01', 100, 4);
+INSERT INTO works_on VALUES ('RNSCSE01', 101, 6);
+INSERT INTO works_on VALUES ('RNSCSE01', 102, 8);
+INSERT INTO works_on VALUES ('RNSCSE02', 100, 10);
+INSERT INTO works_on VALUES ('RNSCSE04', 100, 3);
+INSERT INTO works_on VALUES ('RNSCSE05', 101, 4);
+ 
+INSERT INTO works_on VALUES ('RNSCSE06', 102, 5);
+INSERT INTO works_on VALUES ('RNSCSE03', 102, 6);
+INSERT INTO works_on VALUES ('RNSECE01', 103, 7);
+INSERT INTO works_on VALUES ('RNSACC01', 104, 5);
+INSERT INTO works_on VALUES ('RNSACC02', 105, 6);
+INSERT INTO works_on VALUES ('RNSISE01', 106, 4);
+INSERT INTO works_on VALUES ('RNSIT01', 107, 10);
