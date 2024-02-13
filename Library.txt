@@ -1,0 +1,81 @@
+LIBRARY:-
+
+ 
+
+create table publisher(name varchar(20) primary key,phone_no varchar(20),address varchar(20));
+create table book (book_id int primary key,title varchar(20),pub_year varchar(20),pub_name varchar(20),foreign key(pub_name) references publisher(name) ON DELETE CASCADE);
+create table book_authors(book_id int,author_name varchar(20),primary key(book_id,author_name),foreign key(book_id) references book(book_id) ON DELETE CASCADE);
+create table lib_branch(branch_id int primary key,address varchar(20),branch_name varchar(20));
+create table book_copies(book_id int,branch_id int,no_of_copies varchar(20),foreign key(book_id) references book(book_id) ON DELETE CASCADE,foreign key(branch_id) references lib_branch(branch_id) ON DELETE CASCADE,primary key(book_id,branch_id));
+
+create table card( card_no int primary key);
+create table book_lending(book_id int,branch_id int,card_no int,date_out date,due_date date,primary key(book_id,branch_id,card_no),foreign key(book_id) references book(book_id) ON DELETE CASCADE,foreign key(branch_id) references lib_branch(branch_id) ON DELETE CASCADE, foreign key(card_no) references card(card_no) ON DELETE CASCADE);
+
+1.select b.book_id,b.title,b.pub_name,a.author_name,c.no_of_copies,l.branch_id from (book b,book_authors a,book_copies c,lib_branch l) where b.book_id = a.book_id and b.book_id= c.book_id and l.branch_id = c.branch_id;
+ 
+2.select card_no from book_lending where date_out between '2017-01-01' and '2017-07-01' group by card_no having count(*)>3;
+
+3.delete from book where book_id = 3;
+4.create view v_publication as select pub_year from book;
+
+select * from v_publication;
+5. create view v_book as select b.book_id,b.title,c.no_of_copies from book b,book_copies c,lib_branch l where b.book_id = c.book_id and c.branch_id = l.branch_id;
+
+select * from v_book;
+
+ 
+
+INSERT INTO publisher VALUES ('MCGRAW-HILL', 9989076587, 'BANGALORE');
+INSERT INTO publisher VALUES ('PEARSON', 9889076565, 'NEWDELHI');
+INSERT INTO publisher VALUES ('RANDOM HOUSE', 7455679345, 'HYDERABAD');
+INSERT INTO publisher VALUES ('HACHETTE LIVRE', 8970862340, 'CHENNAI');
+INSERT INTO publisher VALUES ('GRUPO PLANETA', 7756120238, 'BANGALORE');
+
+INSERT INTO book VALUES (1, 'DBMS', '2017-01', 'MCGRAW-HILL');
+INSERT INTO book VALUES (2, 'ADBMS', '2016-06', 'MCGRAW-HILL');
+INSERT INTO book VALUES (3, 'CN', '2016-09', 'PEARSON');
+INSERT INTO book VALUES (4, 'CG', '2015-09', 'GRUPO PLANETA');
+INSERT INTO book VALUES (5, 'OS', '2016-05', 'PEARSON');
+
+
+INSERT INTO book_authors VALUES (1, 'NAVATHE');
+INSERT INTO book_authors VALUES (2, 'NAVATHE');
+INSERT INTO book_authors VALUES (3, 'TANENBAUM');
+INSERT INTO book_authors VALUES (4, 'EDWARD ANGEL');
+INSERT INTO book_authors VALUES (5, 'GALVIN');
+
+
+ 
+
+INSERT INTO lib_branch VALUES (10, 'RR NAGAR', 'BANGALORE');
+INSERT INTO lib_branch VALUES (11, 'RNSIT', 'BANGALORE');
+INSERT INTO lib_branch VALUES (12, 'RAJAJI NAGAR', 'BANGALORE');
+INSERT INTO lib_branch VALUES (13, 'NITTE', 'MANGALORE');
+INSERT INTO lib_branch VALUES (14, 'MANIPAL', 'UDUPI');
+
+ 
+
+INSERT INTO book_copies VALUES (1, 10, 10);
+INSERT INTO book_copies VALUES (1, 10, 10);
+INSERT INTO book_copies VALUES (1, 11, 5);
+INSERT INTO book_copies VALUES (2, 12, 2);
+INSERT INTO book_copies VALUES (2, 13, 5);
+INSERT INTO book_copies VALUES (3, 14, 7);
+INSERT INTO book_copies VALUES (5, 10, 1);
+INSERT INTO book_copies VALUES (4, 11, 3);
+
+ 
+
+INSERT INTO card VALUES (100);
+INSERT INTO card VALUES (101);
+INSERT INTO card VALUES (102);
+INSERT INTO card VALUES (103);
+INSERT INTO card VALUES (104);
+
+ 
+
+INSERT INTO book_lending VALUES (1, 10, 101, '2017-01-01', '2017-06-01');
+INSERT INTO book_lending VALUES (3, 14, 101, '2017-01-11', '2017-03-11');
+INSERT INTO book_lending VALUES (2, 13, 101, '2017-02-21', '2017-04-21');
+INSERT INTO book_lending VALUES (4, 11, 101, '2017-03-15', '2017-07-15');
+INSERT INTO book_lending VALUES (1, 11, 104, '2017-04-12', '2017-05-12');
