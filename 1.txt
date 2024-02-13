@@ -46,24 +46,24 @@ create table book_lending(
     foreign key(card_no) REFERENCES card(card_no)
 );
 
-select b.book_id, b.title, b.pub_name, a.author_name,c.no_of_copies
+1. select b.book_id, b.title, b.pub_name, a.author_name,c.no_of_copies
 from book b,book_author a,book_copies c,library_branch br
 where b.book_id=a.book_id and b.book_id=c.book_id and c.branch_id=br.branch_id;
 
-select card_no
+2. select card_no
 from book_lending
 where date_out between '7' and '31'
 group by card_no
 having count(*)>1;
 
-delete from book
+3. delete from book
 where book_id = 3;
 
-create view pub as
+4. create view pub as
 select pub_year 
 from book;
 
-create view copies AS
+5. create view copies AS
 select b.book_id, b.title,c.no_of_copies
 from book b,book_copies c,library_branch br
 where b.book_id=c.book_id and c.branch_id=br.branch_id;
@@ -151,7 +151,7 @@ update employee set superssn=104 where dno=3;
 update employee set superssn=105 where dno=4;
 update employee set superssn=107 where dno=5;
 
-(select distinct p.pno 
+1. (select distinct p.pno 
  from project p, employee e, works_on w
  where e.ssn=w.ssn and w.pno=p.pno and e.lname="scott");
 union
@@ -159,10 +159,34 @@ union
  from project p,dept d,employee e
  where p.dno=d.dno and d.mgrssn=e.ssn and e.lname"scott");
 
-select e.fname, e.lname, 1.1*e.salary
+2. select e.fname, e.lname, 1.1*e.salary
 from employee e, project p,works_son w
 where e.ssn=w.ssn and w.pno=p.pno and pname="iot");
 
-select sum(e.salary),max(e.salary),min(e.salary),avg(e.salary)
+3. select sum(e.salary),max(e.salary),min(e.salary),avg(e.salary)
 from employee e,dept d
 where e.dno=d.dno and dname="accounts";
+
+4. SELECT E.FNAME, E.LNAME
+FROM EMPLOYEE E
+WHERE NOT EXISTS((SELECT PNO
+FROM PROJECT
+WHERE DNO=’5’)
+EXCEPT(SELECT PNO
+FROM WORKS_ON 
+WHERE E.SSN=SSN));
+or
+SELECT lname, fname, dno 
+FROM emp 
+WHERE NOT EXISTS (SELECT * 
+                  FROM works_on b 
+                  WHERE (b.pno IN(SELECT p.pno 
+                                 FROM project p 
+                                 WHERE p.dno='5') 
+                         AND 
+                         NOT EXISTS (SELECT * 
+                                     FROM works_on c 
+                                     WHERE c.ssn=ssn 
+                                     AND c.pno=b.pno)));
+
+5. select d.dno,count(*) from dept d,emp e where d.dno = e.dno and e.salary>600000 and d.dno in(select e1.dno from emp e1 group by e1.dno having count(*)>5) group by d.dno;
